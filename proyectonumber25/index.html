@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mi Administración Personal</title>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+    <div id="login-screen" class="login-screen">
+        <div class="login-container">
+            <img src="logo.png" alt="Logo Mi Admin" class="login-logo">
+            <h1>Mi Admin Personal</h1>
+            <p>Control total de tus finanzas</p>
+            <form id="login-form" onsubmit="return false;">
+                <label for="real-pin-input">Ingresa tu PIN de 4 dígitos</label>
+                <div id="pin-container" class="pin-input-container">
+                    <div class="pin-box-visual"></div>
+                    <div class="pin-box-visual"></div>
+                    <div class="pin-box-visual"></div>
+                    <div class="pin-box-visual"></div>
+                    <input type="tel" inputmode="numeric" maxlength="4" id="real-pin-input" class="real-pin-input" autocomplete="off" />
+                </div>
+            </form>
+            <p id="pin-hint" class="pin-hint">Crea tu PIN de 4 dígitos para empezar.</p>
+        </div>
+    </div>
+
+    <div id="main-app" class="main-app hidden">
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <img src="logo.png" alt="Logo Mi Admin" class="sidebar-logo">
+                <span>Mi Admin</span>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-item active"><i class="fas fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="#cuentas" class="nav-item"><i class="fas fa-landmark"></i> Cuentas</a></li>
+                <li><a href="#movimientos" class="nav-item"><i class="fas fa-exchange-alt"></i> Movimientos</a></li>
+                <li><a href="#presupuestos" class="nav-item"><i class="fas fa-bullseye"></i> Presupuestos</a></li>
+                <li><a href="#suscripciones" class="nav-item"><i class="fas fa-sync-alt"></i> Suscripciones</a></li>
+                <li><a href="#deudas" class="nav-item"><i class="fas fa-file-invoice-dollar"></i> Deudas</a></li>
+                <li><a href="#ahorros" class="nav-item"><i class="fas fa-piggy-bank"></i> Ahorros</a></li>
+                <li><a href="#cuadre" class="nav-item"><i class="fas fa-check-circle"></i> Cuadre</a></li>
+                <li><a href="#reportes" class="nav-item"><i class="fas fa-chart-line"></i> Reportes</a></li>
+                <li><a href="#configuracion" class="nav-item"><i class="fas fa-cog"></i> Configuración</a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <button id="logout-btn" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <!-- SECCIONES DE LA APP -->
+            <section id="dashboard" class="section active">
+                <div class="dashboard-header">
+                    <h2 id="dashboard-greeting">Buenos días</h2>
+                    <p>Aquí tienes el resumen de tus finanzas.</p>
+                </div>
+                <div class="dashboard-grid-v2">
+                    <div class="stat-card-v2 total">
+                        <span>Saldo Total General</span>
+                        <p id="total-disponible">$0.00</p>
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="stat-card-v2 efectivo">
+                        <span>Saldo en Efectivo</span>
+                        <p id="saldo-efectivo">$0.00</p>
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="stat-card-v2 cuentas">
+                        <span>Saldo en Cuentas</span>
+                        <p id="saldo-cuentas">$0.00</p>
+                        <i class="fas fa-landmark"></i>
+                    </div>
+                    <div class="card main-chart-card">
+                        <h3>Resumen Mensual (Ingresos vs. Egresos)</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="main-dashboard-chart"></canvas>
+                        </div>
+                    </div>
+                    <div class="card side-panel-card">
+                        <h3>Resumen de Presupuestos</h3>
+                        <div id="dashboard-budgets-summary"></div>
+                    </div>
+                    <div class="card side-panel-card">
+                        <h3>Próximos Pagos</h3>
+                        <div id="upcoming-payments-list"></div>
+                    </div>
+                    <div class="card side-panel-card">
+                        <h3>Actividad Reciente</h3>
+                        <div id="recent-activity-list"></div>
+                    </div>
+                    <div class="card side-panel-card">
+                        <h3>Acciones Rápidas</h3>
+                        <div class="quick-actions-grid">
+                            <button id="quick-action-movimiento" class="btn-secondary"><i class="fas fa-plus"></i> Nuevo Movimiento</button>
+                            <button id="quick-action-cuenta" class="btn-secondary"><i class="fas fa-landmark"></i> Nueva Cuenta</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="cuentas" class="section">
+                <div class="section-header">
+                    <h2>Cuentas Bancarias</h2>
+                    <button class="btn-primary" id="btn-nueva-cuenta"><i class="fas fa-plus"></i> Nueva Cuenta</button>
+                </div>
+                <div id="cuentas-container" class="grid-container"></div>
+            </section>
+
+            <section id="movimientos" class="section">
+                <div class="section-header">
+                    <h2>Mis Movimientos</h2>
+                    <button class="btn-primary" id="btn-nuevo-movimiento"><i class="fas fa-plus"></i> Nuevo Movimiento</button>
+                </div>
+                <div id="movimientos-lista" class="movimientos-container"></div>
+            </section>
+
+            <section id="presupuestos" class="section">
+                <div class="section-header">
+                    <h2>Plan de Presupuestos</h2>
+                    <button class="btn-primary" id="btn-guardar-presupuestos"><i class="fas fa-save"></i> Guardar Cambios</button>
+                </div>
+                <div id="presupuestos-container" class="grid-container"></div>
+            </section>
+
+            <section id="suscripciones" class="section">
+                <div class="section-header">
+                    <h2>Suscripciones</h2>
+                    <button class="btn-primary" id="btn-nueva-suscripcion"><i class="fas fa-plus"></i> Nueva Suscripción</button>
+                </div>
+                <div id="suscripciones-container" class="grid-container"></div>
+            </section>
+
+            <section id="deudas" class="section">
+                <div class="section-header">
+                    <h2>Gestión de Deudas</h2>
+                    <button class="btn-primary" id="btn-nueva-deuda"><i class="fas fa-plus"></i> Nueva Deuda</button>
+                </div>
+                <div id="deudas-container" class="deudas-grid"></div>
+            </section>
+
+            <section id="ahorros" class="section">
+                <div class="section-header">
+                    <h2>Metas de Ahorro</h2>
+                    <button class="btn-primary" id="btn-nueva-meta"><i class="fas fa-plus"></i> Nueva Meta</button>
+                </div>
+                <div id="ahorros-container" class="ahorros-grid"></div>
+            </section>
+
+            <section id="cuadre" class="section">
+                <div class="section-header">
+                    <h2>Cuadre de Cuentas y Efectivo</h2>
+                </div>
+                <p class="section-description">Compara el saldo registrado en la app con tu saldo real y crea ajustes si es necesario.</p>
+                <div id="cuadre-container" class="cuadre-grid"></div>
+            </section>
+
+            <section id="reportes" class="section">
+                <div class="section-header">
+                    <h2>Reportes y Análisis</h2>
+                </div>
+                <div class="card">
+                    <h3>Filtros de Análisis</h3>
+                    <form id="form-report-filters" class="report-filters" onsubmit="return false;">
+                        <div class="form-group">
+                            <label for="filter-start-date">Fecha de Inicio</label>
+                            <input type="date" id="filter-start-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-end-date">Fecha de Fin</label>
+                            <input type="date" id="filter-end-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-type">Tipo de Movimiento</label>
+                            <select id="filter-type">
+                                <option value="todos">Todos</option>
+                                <option value="ingreso">Ingresos</option>
+                                <option value="egreso">Egresos</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="filter-account">Método de Pago</label>
+                            <select id="filter-account"></select>
+                        </div>
+                        <button type="submit" class="btn-primary">Aplicar Filtros</button>
+                    </form>
+                </div>
+                <div id="report-summary-cards" class="stats-grid"></div>
+                <div class="card">
+                    <h3>Distribución de Egresos por Categoría</h3>
+                    <div class="chart-wrapper">
+                        <canvas id="category-chart"></canvas>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="configuracion" class="section">
+                <div class="section-header">
+                    <h2>Configuración</h2>
+                </div>
+                <div class="config-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-lock"></i> Seguridad</h3>
+                        <p>Actualiza tu PIN de acceso de 4 dígitos.</p>
+                        <form id="form-change-pin" onsubmit="return false;" class="config-form">
+                            <div class="form-group">
+                                <label for="new-pin">Nuevo PIN</label>
+                                <input type="password" id="new-pin" inputmode="numeric" maxlength="4" placeholder="••••" required />
+                            </div>
+                            <div class="form-group">
+                                <label for="confirm-pin">Confirmar Nuevo PIN</label>
+                                <input type="password" id="confirm-pin" inputmode="numeric" maxlength="4" placeholder="••••" required />
+                            </div>
+                            <button type="submit" class="btn-secondary">Cambiar PIN</button>
+                        </form>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-palette"></i> Apariencia</h3>
+                        <p>Personaliza la apariencia de la aplicación.</p>
+                        <div class="form-group">
+                            <label for="theme-selector">Seleccionar Tema</label>
+                            <select id="theme-selector">
+                                <option value="light">Claro</option>
+                                <option value="dark">Oscuro</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-database"></i> Gestión de Datos</h3>
+                        <p>Crea copias de seguridad o restaura tus datos.</p>
+                        <div class="data-buttons">
+                           <input type="file" id="import-file-input" class="hidden" accept=".json" aria-label="Selector de archivo para importar datos" title="Selector de archivo para importar datos">
+                           <button class="btn-secondary" id="import-data-btn"><i class="fas fa-upload"></i> Importar JSON</button>
+                           <button class="btn-secondary" id="export-data-btn"><i class="fas fa-download"></i> Exportar JSON</button>
+                        </div>
+                    </div>
+                    <div class="card danger-zone">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Zona de Peligro</h3>
+                        <p>Esta acción es irreversible y borrará todos tus datos.</p>
+                        <button class="btn-danger" id="reset-data-btn"><i class="fas fa-trash-alt"></i> Borrar Todos los Datos</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <div id="toast-container"></div>
+    <!-- =================================================== -->
+    <!-- == CONTENEDOR DE MODALES (ESTRUCTURA CORREGIDA)  == -->
+    <!-- =================================================== -->
+    <div id="modal-container" class="modal-container">
+
+        <!-- Modal para Cuentas -->
+        <div id="modal-cuenta" class="modal">
+            <div class="modal-content">
+                <button class="modal-close-btn">&times;</button>
+                <h3 id="cuenta-modal-titulo">Nueva Cuenta Bancaria</h3>
+                <form id="form-cuenta" onsubmit="return false;">
+                    <input type="hidden" id="cuenta-id">
+                    <div class="form-group">
+                        <label for="cuenta-nombre">Nombre del Banco o Institución</label>
+                        <input type="text" id="cuenta-nombre" placeholder="Ej: BBVA, Nu, Hey Banco" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="cuenta-alias">Alias de la Cuenta</label>
+                        <input type="text" id="cuenta-alias" placeholder="Ej: Nómina, Ahorros, Tarjeta" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="cuenta-saldo">Saldo Inicial</label>
+                        <input type="number" id="cuenta-saldo" value="0" step="0.01" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="cuenta-color">Color de Identificación</label>
+                        <input type="color" id="cuenta-color" value="#0052ff" />
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar Cuenta</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Modal para Movimientos -->
+        <div id="modal-movimiento" class="modal">
+            <div class="modal-content">
+                <button class="modal-close-btn">&times;</button>
+                <h3>Nuevo Movimiento</h3>
+                <form id="form-movimiento" onsubmit="return false;">
+                    <input type="hidden" id="movimiento-id">
+                    <div class="form-group">
+                        <label for="descripcion-movimiento">Descripción</label>
+                        <input type="text" id="descripcion-movimiento" placeholder="Ej: Compra de supermercado" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="monto-movimiento">Monto</label>
+                        <input type="number" id="monto-movimiento" placeholder="0.00" step="0.01" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="tipo-movimiento">Tipo</label>
+                        <select id="tipo-movimiento" required>
+                            <option value="egreso">Egreso</option>
+                            <option value="ingreso">Ingreso</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="metodo-pago-movimiento">Método de Pago</label>
+                        <select id="metodo-pago-movimiento" required></select>
+                    </div>
+                    <div class="form-group">
+                        <label for="categoria-movimiento">Categoría</label>
+                        <select id="categoria-movimiento" required>
+                             <option value="otros">Otros</option>
+                             <option value="pago deuda">Pago Deuda</option>
+                             <option value="suscripcion">Suscripción</option>
+                             <option value="comida">Comida</option>
+                             <option value="transporte">Transporte</option>
+                             <option value="vivienda">Vivienda</option>
+                             <option value="entretenimiento">Entretenimiento</option>
+                             <option value="salud">Salud</option>
+                             <option value="salario">Salario</option>
+                             <option value="ahorro">Ahorro</option>
+                             <option value="ajuste">Ajuste</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar Movimiento</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para Suscripciones -->
+        <div id="modal-suscripcion" class="modal">
+            <div class="modal-content">
+                <button class="modal-close-btn">&times;</button>
+                <h3 id="suscripcion-modal-titulo">Nueva Suscripción</h3>
+                <form id="form-suscripcion" onsubmit="return false;">
+                    <input type="hidden" id="suscripcion-id">
+                    <div class="form-group">
+                        <label for="suscripcion-nombre">Nombre del Servicio</label>
+                        <input type="text" id="suscripcion-nombre" placeholder="Ej: Netflix, Spotify, iCloud" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="suscripcion-monto">Monto Mensual</label>
+                        <input type="number" id="suscripcion-monto" placeholder="0.00" step="0.01" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="suscripcion-fecha-corte">Día de Corte (1-31)</label>
+                        <input type="number" id="suscripcion-fecha-corte" min="1" max="31" placeholder="Ej: 15" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="metodo-pago-suscripcion">Método de Pago Predeterminado</label>
+                        <select id="metodo-pago-suscripcion" required></select>
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar Suscripción</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para Deudas -->
+        <div id="modal-deuda" class="modal">
+            <div class="modal-content">
+                <button class="modal-close-btn">&times;</button>
+                <h3 id="deuda-modal-titulo">Nueva Deuda</h3>
+                <form id="form-deuda" onsubmit="return false;">
+                    <input type="hidden" id="deuda-id">
+                    <div class="form-group">
+                        <label for="deuda-descripcion">Descripción</label>
+                        <input type="text" id="deuda-descripcion" placeholder="Ej: Tarjeta de crédito, Préstamo" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="deuda-monto">Monto Total de la Deuda</label>
+                        <input type="number" id="deuda-monto" placeholder="0.00" step="0.01" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="deuda-plazo">Plazo (en meses)</label>
+                        <input type="number" id="deuda-plazo" min="1" placeholder="Ej: 12" />
+                    </div>
+                    <div class="form-group">
+                        <label for="deuda-pago-minimo">Pago Mínimo Mensual</label>
+                        <input type="number" id="deuda-pago-minimo" placeholder="0.00" step="0.01" />
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar Deuda</button>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Modal para Metas de Ahorro -->
+        <div id="modal-ahorro" class="modal">
+            <div class="modal-content">
+                <button class="modal-close-btn">&times;</button>
+                <h3>Meta de Ahorro</h3>
+                <form id="form-ahorro" onsubmit="return false;">
+                    <input type="hidden" id="ahorro-id">
+                    <div class="form-group">
+                        <label for="ahorro-nombre">Nombre de la meta</label>
+                        <input type="text" id="ahorro-nombre" placeholder="Ej: Viaje a la playa" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="ahorro-meta">Monto Objetivo</label>
+                        <input type="number" id="ahorro-meta" placeholder="1000.00" step="0.01" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="ahorro-actual">Ahorro Inicial (opcional)</label>
+                        <input type="number" id="ahorro-actual" value="0" step="0.01" required />
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar Meta</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para Registrar Pago de Deuda -->
+        <div id="modal-pago-deuda" class="modal">
+            <div class="modal-content">
+                <button class="modal-close-btn">&times;</button>
+                <h3 id="pago-deuda-titulo">Registrar Pago</h3>
+                <form id="form-pago-deuda" onsubmit="return false;">
+                    <input type="hidden" id="pago-deuda-id">
+                    <div class="form-group">
+                        <label for="pago-deuda-monto">Monto a Pagar</label>
+                        <input type="number" id="pago-deuda-monto" placeholder="0.00" step="0.01" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="metodo-pago-deuda">Pagar con</label>
+                        <select id="metodo-pago-deuda" required></select>
+                    </div>
+                    <button type="submit" class="btn-primary">Registrar Pago</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Modal para Añadir Aporte a Meta de Ahorro -->
+        <div id="modal-aporte-ahorro" class="modal">
+            <div class="modal-content">
+                <button class="modal-close-btn">&times;</button>
+                <h3 id="aporte-ahorro-titulo">Añadir Ahorro</h3>
+                <form id="form-aporte-ahorro" onsubmit="return false;">
+                    <input type="hidden" id="aporte-ahorro-id">
+                    <div class="form-group">
+                        <label for="aporte-ahorro-monto">Monto a Añadir</label>
+                        <input type="number" id="aporte-ahorro-monto" placeholder="0.00" step="0.01" required />
+                    </div>
+                    <div class="form-group">
+                        <label for="metodo-pago-aporte">Transferir desde</label>
+                        <select id="metodo-pago-aporte" required></select>
+                    </div>
+                    <button type="submit" class="btn-primary">Guardar Aporte</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
