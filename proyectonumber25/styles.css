@@ -2228,3 +2228,52 @@ html[data-theme='dark'] .cuadre-input-group input {
 .stat-card-v2:hover::before {
     left: 150%; /* ...movemos la luz a través de la tarjeta hasta el otro lado. */
 }
+
+/* =================================================== */
+/* == ESTILOS PARA TARJETA DE RESUMEN DE DEUDAS     == */
+/* =================================================== */
+
+.summary-card-v2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.5rem;
+    background-color: var(--card-bg-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-item span {
+    font-size: 0.85rem;
+    color: var(--text-secondary-color);
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.summary-item p {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0.25rem 0 0;
+}
+
+.summary-progress {
+    grid-column: 1 / -1; /* Ocupa todo el ancho del grid */
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.summary-progress span {
+    font-size: 0.85rem;
+    color: var(--text-secondary-color);
+    text-transform: uppercase;
+    font-weight: 500;
+    text-align: center;
+    display: block;
+}

@@ -6,6 +6,7 @@ import { formatCurrency, populateMetodoPagoSelects } from '../utils.js';
 
 // --- Elementos del DOM ---
 const deudasContainer = document.getElementById('deudas-container');
+const deudasSummaryContainer = document.getElementById('deudas-summary-container'); // Se añade el contenedor del resumen
 const btnNuevaDeuda = document.getElementById('btn-nueva-deuda');
 const formDeuda = document.getElementById('form-deuda');
 const deudaModalTitulo = document.getElementById('deuda-modal-titulo');
@@ -29,13 +30,12 @@ function prepararModalParaCrear() {
 function saveDeuda(event) {
     event.preventDefault();
     const id = deudaIdInput.value;
+    // Se corrige para leer solo los campos que existen en el HTML
     const data = {
         descripcion: document.getElementById('deuda-descripcion').value.trim(),
         montoTotal: parseFloat(document.getElementById('deuda-monto').value),
-        plazo: parseInt(document.getElementById('deuda-plazo').value),
-        pagoMinimo: parseFloat(document.getElementById('deuda-pago-minimo').value),
-        diaCorte: document.getElementById('deuda-dia-corte').value,
-        diaPago: document.getElementById('deuda-dia-pago').value,
+        plazo: parseInt(document.getElementById('deuda-plazo').value) || null,
+        pagoMinimo: parseFloat(document.getElementById('deuda-pago-minimo').value) || null,
     };
 
     if (!data.descripcion || isNaN(data.montoTotal) || data.montoTotal <= 0) {
@@ -46,7 +46,6 @@ function saveDeuda(event) {
     if (id) { // Editando
         const index = state.deudas.findIndex(d => d.id === id);
         if (index > -1) {
-            // Se mantiene el monto pagado y solo se actualiza el resto de la info
             state.deudas[index] = { ...state.deudas[index], ...data };
             showToast('Deuda actualizada.', 'success');
         }
@@ -79,10 +78,8 @@ function registrarPagoDeuda(event) {
     const deudaIndex = state.deudas.findIndex(d => d.id === deudaId);
     if (deudaIndex === -1) return;
 
-    // Actualiza el monto pagado en la deuda
     state.deudas[deudaIndex].montoPagado += montoPagado;
 
-    // Crea un nuevo movimiento de tipo egreso
     const nuevoMovimiento = {
         id: `mov-${Date.now()}`,
         descripcion: `Pago de deuda: ${state.deudas[deudaIndex].descripcion}`,
@@ -94,7 +91,6 @@ function registrarPagoDeuda(event) {
     };
     state.movimientos.push(nuevoMovimiento);
 
-    // Actualiza el saldo de la cuenta utilizada para pagar
     if (metodoPago !== 'efectivo') {
         const cuentaIndex = state.cuentas.findIndex(c => c.id === metodoPago);
         if (cuentaIndex > -1) {
@@ -103,7 +99,7 @@ function registrarPagoDeuda(event) {
     }
     
     saveState();
-    window.renderAll(); // Para actualizar otros módulos como el dashboard
+    window.renderAll();
     closeModals();
     showToast('Pago registrado con éxito.', 'success');
 }
@@ -125,11 +121,51 @@ function deleteDeuda(id) {
     }
 }
 
+// ---> FUNCIÓN AÑADIDA PARA EL RESUMEN
 /**
- * Dibuja las tarjetas de deudas con el nuevo diseño.
+ * Calcula y muestra la tarjeta de resumen general de deudas.
+ */
+function renderDeudasSummary() {
+    if (!deudasSummaryContainer) return;
+
+    const totalDeuda = state.deudas.reduce((sum, d) => sum + d.montoTotal, 0);
+    const totalPagado = state.deudas.reduce((sum, d) => sum + d.montoPagado, 0);
+    const saldoPendienteTotal = totalDeuda - totalPagado;
+    const porcentajeGeneralPagado = totalDeuda > 0 ? (totalPagado / totalDeuda) * 100 : 0;
+
+    deudasSummaryContainer.innerHTML = `
+        <div class="card summary-card-v2">
+            <div class="summary-item">
+                <span>Deuda Total</span>
+                <p>${formatCurrency(totalDeuda)}</p>
+            </div>
+            <div class="summary-item">
+                <span>Total Pagado</span>
+                <p class="text-green-500">${formatCurrency(totalPagado)}</p>
+            </div>
+            <div class="summary-item">
+                <span>Saldo Pendiente</span>
+                <p class="text-red-500">${formatCurrency(saldoPendienteTotal)}</p>
+            </div>
+            <div class="summary-progress">
+                <span>Progreso General</span>
+                <div class="progress-bar-v2 mt-2">
+                    <div class="progress normal" style="width: ${porcentajeGeneralPagado}%;"></div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+
+/**
+ * Dibuja las tarjetas de deudas y el resumen.
  */
 export function renderDeudas() {
     if (!deudasContainer) return;
+    
+    renderDeudasSummary(); // Se llama a la nueva función de resumen
+
     if (!state.deudas || state.deudas.length === 0) {
         deudasContainer.innerHTML = '<p class="empty-state">No tienes deudas registradas.</p>';
         return;
@@ -208,8 +244,6 @@ export function initDeudas() {
             document.getElementById('deuda-monto').value = deuda.montoTotal;
             document.getElementById('deuda-plazo').value = deuda.plazo || '';
             document.getElementById('deuda-pago-minimo').value = deuda.pagoMinimo || '';
-            document.getElementById('deuda-dia-corte').value = deuda.diaCorte || '';
-            document.getElementById('deuda-dia-pago').value = deuda.diaPago || '';
 
             openModal('modal-deuda');
         }
@@ -225,6 +259,7 @@ export function initDeudas() {
             
             pagoDeudaTitulo.textContent = `Registrar Pago a: ${deuda.descripcion}`;
             pagoDeudaIdInput.value = id;
+            document.getElementById('form-pago-deuda').reset();
             populateMetodoPagoSelects('metodo-pago-deuda');
             openModal('modal-pago-deuda');
         }
