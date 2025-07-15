@@ -1,0 +1,2279 @@
+/* =================================
+    VARIABLES Y ESTILOS GLOBALES
+    ================================= */
+:root {
+    --font-family: 'Inter', sans-serif;
+    --transition-speed: 0.3s;
+    --border-radius: 12px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+html[data-theme='light'] {
+    --color-primary: #05aeb7;
+    --color-primary-hover: #6fc878;
+    --color-danger: #ea8553;
+    --color-danger-hover: #f6e659;
+    --color-success: #2eb4cc;
+    --color-warning: #f1c40f;
+    --color-info: #3498db;
+    --color-text: #34495e;
+    --color-text-light: #7f8c8d;    
+    --color-bg: #f7f9f4;
+    --color-surface: #ffffff;
+    --color-border: #eef0e2;
+}
+
+html[data-theme='dark'] {
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-danger: #c1eaff;
+    --color-danger-hover: #04f6fa;
+    --color-success: #4adedc;
+    --color-warning: #facc15;
+    --color-info: #5dade2;
+    --color-text: #e2e8f0;
+    --color-text-light: #94a3b8;
+    --color-bg: #1e293b;
+    --color-surface: #2c3e50;
+    --color-border: #475569;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-family);
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =================================
+   PANTALLA DE LOGIN
+   ================================= */
+.login-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(-55deg, #f6a767, #dfc458, #cda172, #7ddcb5, #71f0c8, #5bd7fd,#3fcd71 );
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    opacity: 1;
+    transition: opacity 0.5s ease-out, visibility 0.5s;
+    z-index: 1001;
+    visibility: visible;
+}
+.login-screen.hidden {
+    opacity: 0;
+    visibility: hidden;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.login-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter:(compat-api/css);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 380px;
+    animation: fadeIn 0.5s ease-out;
+    color: #caddf2;
+}
+.login-container.error {
+    animation: shake 0.5s ease-in-out;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+  20%, 40%, 60%, 80% { transform: translateX(10px); }
+}
+
+.login-logo {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+    border-radius: 20px;
+}
+
+.login-container h1 {
+    margin: 10px 0;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+.login-container p {
+    opacity: 0.9;
+    margin-bottom: 25px;
+}
+.login-container label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+.pin-input-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    cursor: text;
+}
+.pin-box-visual {
+    width: 50px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    transition: all 0.2s;
+}
+.pin-box-visual.filled {
+    border-color: #fff;
+    transform: scale(1.1);
+}
+.real-pin-input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border: none;
+    background: transparent;
+    color: transparent;
+    caret-color: transparent;
+    z-index: 1;
+    cursor: text;
+}
+.real-pin-input:focus ~ .pin-box-visual {
+    border-color: #efda1b;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+.pin-hint {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-top: 15px;
+    transition: opacity 0.3s;
+}
+.pin-hint.hidden {
+    opacity: 0;
+}
+
+/* =================================
+   LAYOUT PRINCIPAL
+   ================================= */
+.main-app {
+    display: flex;
+    height: 100vh;
+}
+.sidebar {
+    width: 240px;
+    background: var(--color-surface);
+    border-right: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    transition: background-color var(--transition-speed), border-color var(--transition-speed);
+}
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    padding: 0 20px 20px 20px;
+}
+.sidebar-logo {
+    width: 190px;
+    height: 200px;
+    margin-right: -40px;
+    border-radius: 50px;
+}
+.sidebar-header span {
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+.nav-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex-grow: 1;
+}
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: var(--color-text-light);
+    text-decoration: none;
+    font-weight: 500;
+    margin: 5px 10px;
+    border-radius: 8px;
+    transition: background-color 0.2s, color 0.2s;
+}
+.nav-item i {
+    width: 20px;
+    margin-right: 15px;
+    text-align: center;
+}
+.nav-item:hover {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+}
+.nav-item.active {
+    background-color: var(--color-primary);
+    color: #fff;
+    font-weight: 600;
+}
+.sidebar-footer {
+    padding: 0 20px;
+}
+.logout-btn {
+    width: 100%;
+    background: none;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-light);
+    padding: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: var(--font-family);
+    font-weight: 500;
+    transition: all 0.2s;
+}
+.logout-btn:hover {
+    background-color: var(--color-danger);
+    border-color: var(--color-danger);
+    color: #fff;
+}
+.main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+.section {
+    display: none;
+    animation: fadeIn 0.4s ease-in-out;
+}
+.section.active {
+    display: block;
+}
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 15px;
+}
+.section-header h2 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+.section-description {
+    margin-top: -15px;
+    margin-bottom: 25px;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+.date-display {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+.date-display i {
+    margin-right: 8px;
+}
+
+/* =================================
+   COMPONENTES GENERALES
+   ================================= */
+.card {
+    background: var(--color-surface);
+    border-radius: var(--border-radius);
+    padding: 25px;
+    box-shadow: var(--shadow);
+    margin-bottom: 25px;
+    transition: all var(--transition-speed);
+}
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-hover);
+}
+.grid-container, .ahorros-grid, .deudas-grid, .config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+}
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px;
+    color: var(--color-text-light);
+    opacity: 0.7;
+    background-color: var(--color-bg);
+    border: 2px dashed var(--color-border);
+    border-radius: var(--border-radius);
+}
+.empty-state i {
+    margin-bottom: 15px;
+}
+.card-actions {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    opacity: 0;
+    transition: opacity var(--transition-speed);
+}
+.card:hover .card-actions {
+    opacity: 1;
+}
+.card-actions button {
+    background: none;
+    border: none;
+    color: var(--color-text-light);
+    cursor: pointer;
+    font-size: 1rem;
+    margin-left: 8px;
+    padding: 5px;
+    transition: color 0.2s;
+}
+.card-actions button:hover {
+    color: var(--color-primary);
+}
+
+/* =================================
+   DASHBOARD MEJORADO
+   ================================= */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 25px;
+}
+.main-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 25px;
+}
+.stat-card {
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+}
+.stat-card i {
+    font-size: 2rem;
+    margin-right: 20px;
+    padding: 15px;
+    border-radius: 50%;
+    color: #ecfffe;
+}
+.icon-total { background-color: var(--color-primary); }
+.icon-ingresos { background-color: var(--color-success); }
+.icon-egresos { background-color: var(--color-info); }
+.stat-card h3 {
+    margin: 0 0 5px;
+    font-weight: 500;
+    font-size: 1rem;
+    color: var(--color-text-light);
+}
+.stat-card p {
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+.side-cards .card {
+    display: flex;
+    flex-direction: column;
+}
+.quick-actions, .upcoming-payments, .recent-activity {
+    margin-bottom: 25px;
+}
+.quick-actions .btn-secondary {
+    width: 100%;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+#dashboard-budgets-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+}
+.upcoming-payments-list, .recent-activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 15px;
+}
+.list-item {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+.list-item-icon {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+    display: grid;
+    place-items: center;
+    margin-right: 15px;
+    color: #cade2e;
+}
+.list-item-details {
+    flex-grow: 1;
+}
+.list-item-details p {
+    margin: 0;
+    font-weight: 600;
+}
+.list-item-details span {
+    font-size: 0.8rem;
+    color: var(--color-text-light);
+}
+.list-item-amount {
+    font-weight: 600;
+}
+
+/* =================================
+   TARJETAS ESPECÍFICAS
+   ================================= */
+
+/* Tarjeta de Cuenta Bancaria */
+.cuenta-card {
+    padding: 20px;
+    position: relative;
+    border-left: 5px solid;
+}
+.cuenta-card h3 { margin: 0; font-size: 1.1rem; }
+.cuenta-card .cuenta-alias { font-size: 0.9rem; color: var(--color-text-light); }
+.cuenta-card .cuenta-saldo {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+/* Movimientos */
+.movimientos-container .card { padding: 15px; }
+.movimiento-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.2s;
+    border-radius: 8px;
+}
+.movimiento-item:last-child {
+    border-bottom: none;
+}
+.movimiento-item:hover {
+    background-color: var(--color-bg);
+}
+.movimiento-icon {
+    font-size: 1.5rem;
+    width: 50px;
+    height: 50px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    margin-right: 15px;
+}
+.movimiento-icon.ingreso {
+    color: var(--color-success);
+    background-color: #2ecc7120;
+}
+.movimiento-icon.egreso {
+    color: var(--color-danger);
+    background-color: #e74c3c20;
+}
+.movimiento-details {
+    flex-grow: 1;
+}
+.movimiento-details p {
+    margin: 0;
+    font-weight: 600;
+}
+.movimiento-details span {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    display: block;
+}
+.movimiento-metodo {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.8rem !important;
+}
+.movimiento-monto {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-left: 10px;
+}
+.movimiento-monto.ingreso {
+    color: var(--color-success);
+}
+.movimiento-monto.egreso {
+    color: var(--color-danger);
+}
+.movimiento-actions {
+    margin-left: 15px;
+}
+
+/* Presupuestos Rediseñado */
+.summary-card {
+    text-align: center;
+    padding: 20px;
+}
+.summary-card h3 {
+    margin: 0 0 10px 0;
+}
+.summary-card .summary-values {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    font-size: 1.2rem;
+}
+.summary-card .summary-values strong {
+    color: var(--color-primary);
+}
+#presupuestos-container .card {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+}
+.budget-card-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+.budget-card-header .icon {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+}
+.budget-card-header h4 {
+    margin: 0;
+    flex-grow: 1;
+}
+.budget-card-body .form-group {
+    margin-bottom: 0;
+}
+.budget-card-footer {
+    font-size: 0.85rem;
+    color: var(--color-text-light);
+    margin-top: 10px;
+}
+.budget-input {
+    text-align: right;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+
+/* Tarjeta de Suscripción */
+.suscripcion-card {
+    padding: 20px;
+    position: relative;
+}
+.suscripcion-card h3 { margin: 0; }
+.suscripcion-card .suscripcion-monto {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 5px 0 15px 0;
+}
+.suscripcion-card .suscripcion-info {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.suscripcion-card .suscripcion-info span {
+    display: flex;
+    align-items: center;
+}
+.suscripcion-card .suscripcion-info i {
+    width: 15px;
+    margin-right: 8px;
+    text-align: center;
+}
+.suscripcion-card .card-footer {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid var(--color-border);
+}
+
+/* Deudas */
+.deuda-card {
+    padding: 20px;
+    position: relative;
+}
+.deuda-card.pagada {
+    opacity: 0.6;
+    background-color: var(--color-bg);
+}
+.deuda-card h3 { margin: 0; }
+.deuda-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
+.deuda-estado {
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 8px;
+    border-radius: 6px;
+    color: #c3b140;
+}
+.deuda-estado.pendiente { background-color: var(--color-warning); }
+.deuda-estado.pagada { background-color: var(--color-success); }
+.deuda-card-montos {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    margin: 10px 0;
+}
+.deuda-card-montos .pagado {
+    font-weight: 600;
+    color: var(--color-text);
+}
+.deuda-card-info {
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+.deuda-card-footer {
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid var(--color-border);
+}
+
+/* Ahorros */
+.ahorro-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 15px;
+}
+.ahorro-card-header h3 { margin: 0; }
+.ahorro-card-header button {
+    background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--color-text-light); padding: 0; line-height: 1;
+}
+.ahorro-card-header button:hover { color: var(--color-danger); }
+.ahorro-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+.ahorro-details .current {
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+/* Progress Bar */
+.progress-bar-container {
+    width: 100%;
+    height: 8px;
+    background-color: var(--color-bg);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+.progress-bar {
+    height: 100%;
+    background-color: var(--color-success);
+    border-radius: 4px;
+    transition: width 0.5s ease-out;
+}
+.progress-bar.deuda { background-color: var(--color-primary); }
+.progress-bar.budget-ok { background-color: var(--color-success); }
+.progress-bar.budget-warn { background-color: var(--color-warning); }
+.progress-bar.budget-danger { background-color: var(--color-danger); }
+
+/* Reportes Rediseñado */
+.report-filters {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: end;
+}
+.report-filters .btn-primary {
+    height: 48px; /* Alinear con los inputs */
+}
+
+/* Configuración Rediseñado */
+.config-list {
+    display: flex;
+    flex-direction: column;
+}
+.config-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 25px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+.config-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+.config-item:first-child {
+    padding-top: 0;
+}
+.config-item-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding-right: 20px;
+}
+.config-item-info i {
+    font-size: 1.5rem;
+    color: var(--color-primary);
+    width: 25px;
+    text-align: center;
+    margin-top: 5px;
+}
+.config-item-info h4 {
+    margin: 0 0 5px 0;
+}
+.config-item-info p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--color-text-light);
+}
+.config-item-control {
+    width: 300px;
+    flex-shrink: 0;
+}
+.config-item-control .btn-secondary,
+.config-item-control .btn-danger {
+    width: 100%;
+    justify-content: center;
+}
+.danger-zone .config-item-info i {
+    color: var(--color-danger);
+}
+.danger-zone .config-item-info p {
+    color: var(--color-danger);
+}
+
+
+/* =================================
+   BOTONES Y MODALES
+   ================================= */
+.btn-primary, .btn-secondary, .btn-danger {
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-family: var(--font-family);
+    transition: all var(--transition-speed);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+.btn-primary:hover, .btn-secondary:hover, .btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+.btn-primary { background-color: var(--color-primary); color: white; }
+.btn-primary:hover { background-color: var(--color-primary-hover); }
+.btn-secondary { background-color: var(--color-bg); color: var(--color-text); border: 1px solid var(--color-border); }
+.btn-secondary:hover { background-color: var(--color-border); }
+.btn-danger { background-color: var(--color-danger); color: white; }
+.btn-danger:hover { background-color: var(--color-danger-hover); }
+.section-header .btn-primary { padding: 12px 20px; }
+
+.modal-container {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.5); display: flex; justify-content: center;
+    align-items: center; opacity: 0; pointer-events: none;
+    transition: opacity var(--transition-speed) ease; z-index: 1000;
+}
+.modal-container.visible { opacity: 1; pointer-events: all; }
+.modal { display: none; }
+.modal-content {
+    background: var(--color-surface); padding: 30px; border-radius: var(--border-radius);
+    width: 90%; max-width: 450px; transform: scale(0.95);
+    transition: transform var(--transition-speed) ease; position: relative;
+}
+.modal-container.visible .modal-content { transform: scale(1); }
+.modal-close-btn {
+    position: absolute; top: 10px; right: 15px; background: none; border: none;
+    font-size: 2rem; color: var(--color-text-light); cursor: pointer;
+}
+.modal-content h3 { margin-top: 0; margin-bottom: 25px; text-align: center; }
+.form-group { margin-bottom: 15px; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 500; }
+.form-group input, .form-group select {
+    width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--color-border);
+    background-color: var(--color-bg); color: var(--color-text);
+}
+.form-group input[type="color"] { padding: 5px; height: 50px; }
+.modal-content button[type="submit"] { width: 100%; margin-top: 10px; }
+
+/* =================================
+   NOTIFICACIONES (TOAST)
+   ================================= */
+#toast-container {
+    position: fixed; bottom: 20px; right: 20px; z-index: 2000;
+    display: flex; flex-direction: column; gap: 10px;
+}
+.toast {
+    padding: 15px 20px; border-radius: 8px; color: #fff; font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    animation: slideInUp 0.3s ease-out, fadeOut 0.5s ease-in 2.7s forwards;
+}
+.toast.success { background-color: var(--color-success); }
+.toast.error { background-color: var(--color-danger); }
+.toast.info { background-color: var(--color-info); }
+.toast.warning { background-color: var(--color-warning); color: #333; }
+
+/* =================================
+   ANIMACIONES Y RESPONSIVIDAD
+   ================================= */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@media (max-width: 1024px) {
+    .dashboard-grid { grid-template-columns: 1fr; }
+    .config-item { flex-direction: column; gap: 15px; }
+    .config-item-control { width: 100%; }
+}
+@media (max-width: 768px) {
+    .main-app { flex-direction: column; }
+    .sidebar {
+        width: 100%; height: auto; flex-direction: row; border-right: none;
+        border-bottom: 1px solid var(--color-border); padding: 0; overflow-x: auto;
+    }
+    .sidebar-header { display: none; }
+    .nav-menu { display: flex; flex-direction: row; flex-grow: 0; }
+    .nav-item { margin: 5px; flex-direction: column; padding: 10px; gap: 5px; font-size: 0.8rem; }
+    .nav-item i { margin-right: 0; }
+    .sidebar-footer { display: none; }
+    .main-content { padding: 15px; }
+    .section-header h2 { font-size: 1.5rem; }
+    .grid-container, .ahorros-grid, .deudas-grid, .config-grid, .stats-grid { grid-template-columns: 1fr; }
+
+   /* --- Solución para el Gráfico de Reportes --- */
+
+.chart-wrapper {
+  position: relative;
+  height: 400px; /* Le damos una altura fija y consistente */
+  width: 100%;
+}
+
+.chart-container canvas {
+    width: 100% !important; /* Aseguramos que el canvas ocupe todo el ancho del contenedor. */
+    height: 100% !important; /* Aseguramos que el canvas ocupe todo el alto del contenedor. */
+    display: block; /* Evitamos el espacio extra debajo del canvas. */
+    }
+}
+/* --- Estilos para el Resumen de Presupuestos en el Dashboard --- */
+
+#dashboard-budgets-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem; /* Espacio entre cada item de presupuesto */
+}
+
+.budget-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.budget-summary-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: var(--text-secondary-color);
+}
+
+.budget-summary-header i {
+  color: var(--primary-accent-color);
+}
+
+.budget-summary-details {
+  font-size: 0.9rem;
+}
+
+.budget-summary-details .gastado {
+  font-weight: 600;
+  color: var(--text-primary-color);
+}
+
+.budget-summary-details .limite {
+  color: var(--text-secondary-color);
+}
+
+.progress-bar-summary {
+  width: 100%;
+  height: 8px;
+  background-color: #e9ecef; /* Un gris muy claro */
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar-summary .progress {
+  height: 100%;
+  background-color: var(--primary-accent-color);
+  border-radius: 4px;
+  transition: width 0.5s ease-in-out;
+}
+
+.progress-bar-summary .progress.excedido {
+  background-color: var(--danger-color); /* Rojo cuando se excede */
+}
+
+.empty-state-small {
+    text-align: center;
+    color: var(--text-secondary-color);
+    font-size: 0.9rem;
+    padding: 1rem;
+}
+.empty-state-small i {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    color: var(--primary-accent-color);
+}
+
+/* ============================================= */
+/* == MEJORAS VISUALES PARA EL DASHBOARD      == */
+/* ============================================= */
+
+/* --- Tarjetas de Saldo (Efecto Dinámico y Moderno) --- */
+.stat-card {
+  background: var(--card-bg-color);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 4px 15px rgba(0, 82, 255, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden; /* Esencial para contener el efecto de luz */
+}
+
+/* Efecto de "luz" que se mueve al pasar el mouse */
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%; /* Empieza fuera de la vista */
+  width: 75%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 82, 255, 0.1), transparent);
+  transform: skewX(-25deg); /* Inclina la luz */
+  transition: left 0.6s ease;
+  z-index: 0;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px); /* Se levanta al pasar el mouse */
+  box-shadow: 0 10px 25px rgba(0, 82, 255, 0.12); /* Sombra más pronunciada */
+}
+
+.stat-card:hover::before {
+  left: 150%; /* Mueve la luz a través de la tarjeta */
+}
+
+.stat-card > * {
+  position: relative; /* Asegura que el contenido esté sobre el efecto de luz */
+  z-index: 1;
+}
+
+/* --- Iconos dentro de las tarjetas de saldo --- */
+.stat-card:hover i {
+  transform: scale(1.1); /* El ícono se hace un poco más grande */
+  transition: transform 0.3s ease;
+}
+
+
+/* --- Tarjetas Laterales (Acciones, Pagos, Actividad) --- */
+.side-cards .card {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.side-cards .card:hover {
+  border-color: rgba(0, 82, 255, 0.4);
+  box-shadow: 0 2px 10px rgba(150, 244, 209, 0.104);
+}
+
+
+/* --- Items de las listas (Actividad Reciente y Próximos Pagos) --- */
+.list-item {
+  display: flex;
+  align-items: center;
+  padding: 0.8rem 0.5rem;
+  border-radius: 8px;
+  transition: background-color 0.2s ease-in-out;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.list-item:last-child {
+  border-bottom: none;
+}
+
+.list-item:hover {
+  background-color: #fbe77a; /* Un fondo muy sutil al pasar el mouse */
+}
+
+/* Ajustes para el tema oscuro */
+html[data-theme='dark'] .list-item:hover {
+  background-color: #bee983;
+}
+
+.list-item-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 12px;
+}
+
+.list-item-icon.ingreso {
+  background-color: rgba(34, 197, 94, 0.1);
+  color: #22C55E;
+}
+
+.list-item-icon.egreso {
+  background-color: rgba(239, 68, 68, 0.1);
+  color: #EF4444;
+}
+
+.list-item-details p {
+  margin: 0;
+  font-weight: 500;
+  color: var(--text-primary-color);
+}
+
+.list-item-details span {
+  font-size: 0.8rem;
+  color: var(--text-secondary-color);
+}
+
+.list-item-amount {
+  margin-left: auto;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.list-item-amount.ingreso {
+  color: #22C55E;
+}
+
+.list-item-amount.egreso {
+  color: #EF4444;
+}
+
+/* --- Estilos para Estados Vacíos con Ilustración --- */
+
+.empty-state-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+  text-align: center;
+  opacity: 0.6; /* Lo hacemos un poco tenue */
+}
+
+.empty-state-visual svg {
+  color: var(--text-secondary-color);
+  margin-bottom: 1rem;
+}
+
+.empty-state-visual p {
+  color: var(--text-secondary-color);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ============================================= */
+/* == MEJORAS VISUALES PARA SECCIÓN DE CUENTAS == */
+/* ============================================= */
+
+/* Contenedor principal de las tarjetas */
+#cuentas-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.cuenta-card-wrapper {
+    perspective: 1000px; /* Necesario para el efecto 3D en hover */
+}
+
+/* Estilo principal de la tarjeta de cuenta */
+.cuenta-card {
+    background: rgba(255, 255, 255, 0.6); /* Fondo semi-transparente */
+    backdrop-filter: blur(10px); /* Efecto de vidrio esmerilado */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Tema oscuro */
+html[data-theme='dark'] .cuenta-card {
+    background: rgba(40, 40, 40, 0.6);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Efecto de brillo que usa el color de la cuenta */
+.cuenta-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, var(--glow-color, #0052ff) 0%, transparent 40%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    z-index: 0;
+    animation: rotateGlow 10s linear infinite;
+}
+
+@keyframes rotateGlow {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.cuenta-card:hover {
+    transform: rotateX(5deg) rotateY(-5deg) scale(1.05);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+}
+
+.cuenta-card:hover::before {
+    opacity: 0.15;
+}
+
+/* Contenido de la tarjeta siempre por encima del brillo */
+.cuenta-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.cuenta-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.cuenta-nombre {
+    font-weight: 600;
+    color: var(--text-primary-color);
+}
+
+.cuenta-card-body .cuenta-alias {
+    font-size: 0.9rem;
+    color: var(--text-secondary-color);
+    margin: 0 0 0.5rem;
+}
+
+.cuenta-saldo {
+    font-size: 2.25rem;
+    font-weight: 700;
+    color: var(--text-primary-color);
+    margin: 0;
+}
+
+.cuenta-saldo.negative-balance {
+    color: var(--danger-color, #dc3545);
+}
+
+/* Tarjeta especial para añadir cuenta */
+.add-cuenta-card {
+    width: 100%;
+    height: 100%;
+    min-height: 190px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed var(--border-color);
+    border-radius: 16px;
+    background-color: transparent;
+    color: var(--text-secondary-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.add-cuenta-card:hover {
+    border-color: var(--primary-accent-color);
+    color: var(--primary-accent-color);
+    background-color: rgba(0, 82, 255, 0.05);
+}
+
+.add-cuenta-card i {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+}
+
+/* Estado vacío para la página completa */
+.empty-state-full-page {
+    grid-column: 1 / -1; /* Ocupa todo el ancho del grid */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 3rem;
+    text-align: center;
+    color: var(--text-secondary-color);
+}
+
+.empty-state-full-page svg {
+    opacity: 0.5;
+    margin-bottom: 1rem;
+}
+
+/* ============================================= */
+/* == ESTILOS DE ANÁLISIS PARA TARJETAS DE CUENTAS == */
+/* ============================================= */
+
+.cuenta-card-body {
+    margin-bottom: 1rem;
+}
+
+.cuenta-card-stats {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(128, 128, 128, 0.2);
+    border-bottom: 1px solid rgba(128, 128, 128, 0.2);
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary-color);
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+}
+
+.stat-value {
+    font-weight: 600;
+}
+
+.stat-value.ingreso {
+    color: #22C55E;
+}
+
+.stat-value.egreso {
+    color: #EF4444;
+}
+
+.cuenta-card-footer {
+    display: flex;
+    justify-content: center;
+}
+
+.view-movimientos {
+    width: 100%;
+    padding: 0.6rem;
+    font-weight: 600;
+}
+
+/* ============================================= */
+/* == MEJORAS VISUALES PARA SECCIÓN MOVIMIENTOS == */
+/* ============================================= */
+
+#movimientos-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Espacio entre grupos de fechas */
+}
+
+.movimiento-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.movimiento-group-header {
+    font-weight: 600;
+    color: var(--text-secondary-color);
+    padding: 0.25rem 0;
+    border-bottom: 2px solid var(--border-color);
+    margin-bottom: 0.5rem;
+}
+
+/* Rediseño del item de movimiento individual */
+.movimiento-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background-color: var(--card-bg-color);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.movimiento-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+}
+
+.movimiento-details p {
+    font-weight: 500;
+}
+
+.movimiento-details span {
+    font-size: 0.85rem;
+}
+
+/* Botones de acción aparecen al hacer hover */
+.movimiento-actions {
+    display: flex;
+    gap: 0.5rem;
+    opacity: 0; /* Ocultos por defecto */
+    transition: opacity 0.2s ease;
+}
+
+.movimiento-item:hover .movimiento-actions {
+    opacity: 1; /* Visibles en hover */
+}
+
+.movimiento-actions button {
+    background: none;
+    border: none;
+    color: var(--text-secondary-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.5rem;
+    border-radius: 50%;
+}
+
+.movimiento-actions button:hover {
+    background-color: #e9ecef;
+    color: var(--text-primary-color);
+}
+
+html[data-theme='dark'] .movimiento-actions button:hover {
+    background-color: #333;
+}
+/* =================================================== */
+/* == MEJORAS VISUALES PARA SECCIÓN DE PRESUPUESTOS == */
+/* =================================================== */
+
+#presupuestos-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.presupuesto-card-v2 {
+    background-color: var(--card-bg-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.presupuesto-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.presupuesto-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.presupuesto-title i {
+    font-size: 1.25rem;
+    color: var(--primary-accent-color);
+}
+
+.presupuesto-title h4 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.presupuesto-limite-control {
+    text-align: right;
+}
+
+.presupuesto-limite-control label {
+    font-size: 0.75rem;
+    color: var(--text-secondary-color);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.input-stepper {
+    display: flex;
+    align-items: center;
+    background-color: #f0f4f8;
+    border-radius: 8px;
+}
+
+html[data-theme='dark'] .input-stepper {
+    background-color: #2c2c2c;
+}
+
+.presupuesto-input {
+    width: 80px;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-weight: 600;
+    -moz-appearance: textfield; /* Para Firefox */
+    appearance: textfield; /* Versión estándar */
+}
+
+.presupuesto-input::-webkit-outer-spin-button,
+.presupuesto-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.stepper-btn {
+    border: none;
+    background: transparent;
+    color: var(--text-secondary-color);
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0.25rem 0.75rem;
+}
+.stepper-btn:hover {
+    color: var(--primary-accent-color);
+}
+
+.presupuesto-body {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.presupuesto-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.presupuesto-info.restante {
+    align-items: flex-end;
+}
+
+.presupuesto-info span {
+    font-size: 0.8rem;
+    color: var(--text-secondary-color);
+    margin-bottom: 0.25rem;
+}
+
+.presupuesto-info p {
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+.progress-bar-v2 {
+    width: 100%;
+    height: 12px;
+    background-color: #eeefe9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+html[data-theme='dark'] .progress-bar-v2 {
+    background-color: #333;
+}
+
+.progress-bar-v2 .progress {
+    height: 100%;
+    border-radius: 6px;
+    transition: width 0.5s ease, background-color 0.5s ease;
+}
+
+.progress-bar-v2 .progress.normal {
+    background-color: #28a745; /* Verde */
+}
+.progress-bar-v2 .progress.warning {
+    background-color: #ffc107; /* Amarillo */
+}
+.progress-bar-v2 .progress.danger {
+    background-color: #dc3545; /* Rojo */
+}
+.progress-bar-v2 .progress.exceeded {
+    background-color: #dc3545; /* Rojo para excedido */
+}
+
+/* =================================================== */
+/* == MEJORAS VISUALES PARA SECCIÓN DE SUSCRIPCIONES == */
+/* =================================================== */
+
+#suscripciones-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+}
+
+.suscripcion-card {
+    background-color: var(--card-bg-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: auto 1fr auto; /* Icono | Info | Status */
+    grid-template-rows: auto auto;
+    gap: 0.5rem 1rem;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.suscripcion-icon {
+    grid-row: 1 / 3;
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 82, 255, 0.1);
+    color: var(--primary-accent-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.suscripcion-info h4 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.suscripcion-info .suscripcion-monto {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0.25rem 0;
+}
+
+.suscripcion-info .suscripcion-metodo {
+    font-size: 0.8rem;
+    color: var(--text-secondary-color);
+}
+
+.suscripcion-status {
+    grid-row: 1 / 3;
+    text-align: right;
+}
+
+.suscripcion-status p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-secondary-color);
+}
+
+.suscripcion-status p strong {
+    font-size: 1.1rem;
+    color: var(--text-primary-color);
+    font-weight: 700;
+}
+
+.suscripcion-status span {
+    font-size: 0.8rem;
+    color: var(--text-secondary-color);
+}
+
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+.status-dot.status-ok { background-color: #28a745; } /* Verde */
+.status-dot.status-warning { background-color: #ffc107; } /* Amarillo */
+.status-dot.status-danger { background-color: #dc3545; } /* Rojo */
+
+/* Acciones aparecen al hacer hover en la tarjeta */
+.suscripcion-card .card-actions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 0.25rem;
+    background-color: var(--card-bg-color);
+    padding: 0.25rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.suscripcion-card:hover .card-actions {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* =================================================== */
+/* == MEJORAS VISUALES PARA SECCIÓN DE DEUDAS == */
+/* =================================================== */
+
+#deudas-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.deuda-card-v2 {
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+html[data-theme='dark'] .deuda-card-v2 {
+    background: rgba(40, 40, 40, 0.6);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.deuda-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.deuda-card-header h3 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.deuda-card-body {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.deuda-progress-chart {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: conic-gradient(var(--progress-color) var(--progress-value), #e9ecef 0);
+    flex-shrink: 0;
+}
+
+html[data-theme='dark'] .deuda-progress-chart {
+    background: conic-gradient(var(--progress-color) var(--progress-value), #333 0);
+}
+
+.progress-inner-circle {
+    width: 95px;
+    height: 95px;
+    background: var(--card-bg-color);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.progress-percentage {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary-color);
+}
+
+.progress-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary-color);
+    text-transform: uppercase;
+}
+
+.deuda-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.info-item span {
+    font-size: 0.8rem;
+    color: var(--text-secondary-color);
+    display: block;
+}
+
+.info-item p {
+    margin: 0;
+    font-weight: 600;
+    font-size: 1.25rem;
+}
+
+.deuda-card-footer {
+    margin-top: auto; /* Empuja el footer hacia abajo */
+}
+
+.deuda-card-footer .registrar-pago {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 600;
+}
+
+/* =================================================== */
+/* == MEJORAS VISUALES PARA SECCIÓN DE AHORROS == */
+/* =================================================== */
+
+#ahorros-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+.ahorro-card-v2 {
+    background-color: var(--card-bg-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ahorro-card-v2:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 82, 255, 0.1);
+}
+
+.ahorro-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.ahorro-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    background-color: rgba(0, 82, 255, 0.1);
+    color: var(--primary-accent-color);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.ahorro-title h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+.ahorro-title span {
+    font-size: 0.85rem;
+    color: var(--text-secondary-color);
+}
+
+.ahorro-card-header .card-actions {
+    margin-left: auto;
+}
+
+.ahorro-card-body {
+    margin-bottom: 1.5rem;
+}
+
+.ahorro-progreso-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 0.5rem;
+}
+
+.ahorro-actual {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary-color);
+}
+.ahorro-porcentaje {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-accent-color);
+}
+
+.progress-bar-v3 {
+    width: 100%;
+    height: 16px;
+    background-color: #e9ecef;
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+html[data-theme='dark'] .progress-bar-v3 {
+    background-color: #333;
+}
+.progress-bar-v3 .progress {
+    height: 100%;
+    background: linear-gradient(90deg, #0052ff, #00A3FF);
+    border-radius: 8px;
+    transition: width 0.5s ease;
+    position: relative;
+    overflow: hidden;
+}
+/* Efecto de brillo en la barra */
+.progress-bar-v3 .progress::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    animation: progress-shine 2s infinite;
+}
+@keyframes progress-shine {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.ahorro-restante {
+    text-align: center;
+    margin-top: 0.75rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary-color);
+}
+
+.ahorro-card-footer {
+    margin-top: auto;
+}
+.ahorro-card-footer .add-aporte {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 600;
+}
+
+/* =================================================== */
+/* == MEJORAS VISUALES PARA SECCIÓN DE CUADRE == */
+/* =================================================== */
+
+.cuadre-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+.cuadre-card-v2 {
+    background-color: var(--card-bg-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.cuadre-card-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.cuadre-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    background-color: var(--glow-color, #0d6efd);
+    color: #fff;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.cuadre-title h3 {
+    margin: 0 0 0.25rem;
+    font-weight: 600;
+}
+
+.cuadre-title span {
+    font-size: 0.9rem;
+    color: var(--text-secondary-color);
+}
+
+.cuadre-card-body {
+    padding-left: calc(50px + 1rem); /* Alinea con el texto del header */
+}
+
+/* ---> INICIA BLOQUE MODIFICADO <--- */
+.cuadre-input-group {
+    display: flex;
+    align-items: stretch; /* Estira los elementos a la misma altura */
+    gap: 0; /* Quitamos el gap para unirlos */
+    max-width: 400px; /* Un ancho máximo para que no se vea tan grande */
+}
+
+.cuadre-input-group label {
+    display: none; /* Ocultamos la etiqueta "Ingresa Saldo Real" que ya no es necesaria */
+}
+
+.cuadre-input-group input {
+    flex-grow: 1;
+    border: 1px solid var(--border-color);
+    border-right: none; /* Quitamos el borde derecho para unirlo al botón */
+    border-radius: 8px 0 0 8px; /* Redondeamos solo las esquinas izquierdas */
+    padding: 0.75rem;
+    font-size: 1rem;
+    background-color: #f7f9fc;
+}
+
+html[data-theme='dark'] .cuadre-input-group input {
+    background-color: #2c2c2c;
+}
+
+.cuadre-input-group .btn-primary {
+    border-radius: 0 8px 8px 0; /* Redondeamos solo las esquinas derechas */
+    box-shadow: none;
+}
+/* ---> TERMINA BLOQUE MODIFICADO <--- */
+
+
+.cuadre-resultado {
+    margin-top: 1rem;
+    padding-left: calc(50px + 1rem);
+}
+
+.resultado-feedback {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 500;
+}
+
+.resultado-feedback.success {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #22C55E;
+}
+.resultado-feedback.sobrante {
+    background-color: rgba(34, 197, 94, 0.1);
+}
+.resultado-feedback.faltante {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+.resultado-feedback i {
+    font-size: 1.5rem;
+}
+
+.resultado-info span {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-secondary-color);
+}
+.resultado-info strong {
+    font-size: 1.25rem;
+}
+.resultado-info strong.ingreso { color: #22C55E; }
+.resultado-info strong.egreso { color: #EF4444; }
+
+.resultado-feedback .ajuste-btn {
+    margin-left: auto;
+}
+
+/* =================================================== */
+/* == REDISEÑO COMPLETO PARA SECCIÓN DE DASHBOARD == */
+/* =================================================== */
+
+.dashboard-header {
+    margin-bottom: 2rem;
+}
+
+.dashboard-header h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.dashboard-header p {
+    font-size: 1rem;
+    color: var(--text-secondary-color);
+    margin-top: 0.25rem;
+}
+
+.dashboard-grid-v2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+        "total efectivo cuentas"
+        "mainchart mainchart sidepanel1"
+        "mainchart mainchart sidepanel2"
+        "mainchart mainchart sidepanel3"
+        "mainchart mainchart sidepanel4";
+    gap: 1.5rem;
+}
+
+/* Asignación de áreas del grid */
+.stat-card-v2.total { grid-area: total; }
+.stat-card-v2.efectivo { grid-area: efectivo; }
+.stat-card-v2.cuentas { grid-area: cuentas; }
+.main-chart-card { grid-area: mainchart; }
+.side-panel-card:nth-of-type(2) { grid-area: sidepanel1; }
+.side-panel-card:nth-of-type(3) { grid-area: sidepanel2; }
+.side-panel-card:nth-of-type(4) { grid-area: sidepanel3; }
+.side-panel-card:nth-of-type(5) { grid-area: sidepanel4; }
+
+/* Tarjetas de Saldo Rediseñadas */
+.stat-card-v2 {
+    position: relative;
+    padding: 1.5rem;
+    border-radius: 16px;
+    color: #fff;
+    overflow: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+    animation: fadeInSlideUp 0.5s ease-out forwards;
+}
+.stat-card-v2:hover {
+    transform: translateY(-5px);
+}
+
+.stat-card-v2.total { background: linear-gradient(45deg, #0052ff, #00A3FF); }
+.stat-card-v2.efectivo { background: linear-gradient(45deg, #28a745, #20c997); }
+.stat-card-v2.cuentas { background: linear-gradient(45deg, #6f42c1, #9d6eeb); }
+
+.stat-card-v2 span {
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.8;
+}
+.stat-card-v2 p {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0.25rem 0 0;
+}
+.stat-card-v2 i {
+    position: absolute;
+    right: -20px;
+    bottom: -30px;
+    font-size: 6rem;
+    opacity: 0.15;
+    transform: rotate(-20deg);
+}
+
+/* Tarjeta del Gráfico Principal */
+.main-chart-card {
+    min-height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+.main-chart-card .chart-wrapper {
+    flex-grow: 1;
+}
+
+/* Tarjetas Laterales */
+.side-panel-card {
+    display: flex;
+    flex-direction: column;
+}
+.side-panel-card h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+.quick-actions-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+/* Animación de entrada */
+@keyframes fadeInSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Diseño Responsivo para móviles */
+@media (max-width: 1024px) {
+    .dashboard-grid-v2 {
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            "total efectivo"
+            "cuentas cuentas"
+            "mainchart mainchart"
+            "sidepanel1 sidepanel2"
+            "sidepanel3 sidepanel4";
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-grid-v2 {
+        grid-template-columns: 1fr;
+        grid-template-areas:
+            "total"
+            "efectivo"
+            "cuentas"
+            "mainchart"
+            "sidepanel1"
+            "sidepanel2"
+            "sidepanel3"
+            "sidepanel4";
+    }
+}
+
+/* =================================================== */
+/* == EFECTO FLASH INTERACTIVO PARA TARJETAS DE SALDO == */
+/* =================================================== */
+
+/* Aseguramos que el contenido de la tarjeta esté por encima del efecto */
+.stat-card-v2 > * {
+    position: relative;
+    z-index: 1;
+}
+
+/* Creamos el pseudo-elemento que será nuestro "flash" de luz */
+.stat-card-v2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%; /* Comienza fuera de la tarjeta, a la izquierda */
+    width: 75%;
+    height: 100%;
+    
+    /* Este es el degradado que crea el efecto de luz. Es blanco y semi-transparente. */
+    background: linear-gradient(
+        90deg, 
+        rgba(255, 255, 255, 0) 0%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0) 100%
+    );
+    
+    transform: skewX(-25deg); /* Inclinamos la luz para un look más dinámico */
+    transition: left 0.75s cubic-bezier(0.23, 1, 0.32, 1); /* Una transición suave */
+    z-index: 0;
+}
+
+/* Cuando pasas el mouse sobre la tarjeta... */
+.stat-card-v2:hover::before {
+    left: 150%; /* ...movemos la luz a través de la tarjeta hasta el otro lado. */
+}
+
+/* =================================================== */
+/* == ESTILOS PARA TARJETA DE RESUMEN DE DEUDAS     == */
+/* =================================================== */
+
+.summary-card-v2 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    align-items: center;
+    padding: 1.5rem;
+    background-color: var(--card-bg-color);
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+}
+
+.summary-item {
+    text-align: center;
+}
+
+.summary-item span {
+    font-size: 0.85rem;
+    color: var(--text-secondary-color);
+    text-transform: uppercase;
+    font-weight: 500;
+}
+
+.summary-item p {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin: 0.25rem 0 0;
+}
+
+.summary-progress {
+    grid-column: 1 / -1; /* Ocupa todo el ancho del grid */
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.summary-progress span {
+    font-size: 0.85rem;
+    color: var(--text-secondary-color);
+    text-transform: uppercase;
+    font-weight: 500;
+    text-align: center;
+    display: block;
+}
